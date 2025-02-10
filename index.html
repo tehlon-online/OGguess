@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GuessTheWord.txt</title>
+    <style>
+        body {
+            background-color: #f0f0f0;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        #game-container {
+            width: 500px;
+            min-height: 400px;
+            border: 2px solid #000;
+            background-color: #fff;
+            margin: 50px 0 0 30px;
+            padding: 10px;
+            position: relative;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            font-family: "Courier New", Courier, monospace;
+            overflow: visible;
+        }
+        #title-bar {
+            background-color: #2e2e2e;
+            color: white;
+            padding: 5px 10px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 3px 3px 0 0;
+            margin: -10px -10px 10px;
+        }
+        #word, .wrong-guesses, label {
+            font-size: 18px;
+            padding: 10px 0;
+            display: block;
+        }
+        #footer-text {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 10px;
+            font-style: italic;
+            color: gray;
+        }
+        input[type="text"], button {
+            font-family: "Courier New", Courier, monospace;
+            padding: 5px;
+            font-size: 18px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        button:hover {
+            background-color: #f0f0f0;
+        }
+        .game-content {
+            height: auto;
+        }
+        /* Hide both GIFs by default */
+        #celebration-gif, #losing-gif {
+            display: none;
+            width: 300px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .link-box {
+            background-color: #e3e3e3;
+            border: 2px solid #000;
+            padding: 10px;
+            margin-bottom: 10px;
+            text-align: left;
+            width: 500px; /* Match the width of the game box */
+            margin-left: 30px; /* Align with the game container */
+        }
+        .link-box a {
+            color: #007BFF;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Winning Audio -->
+    <audio id="winningAudio">
+        <source src="And His Name is JOHN CENA - Sound Effect (HD).mp3" type="audio/mpeg">
+    </audio>
+    <!-- Losing Audio -->
+    <audio id="losingAudio">
+        <source src="john-cena-sad-edit-forever-young-ft-john-cena-retirement-from-wwe-128-ytshorts.savetube.me.mp3" type="audio/mpeg">
+    </audio>
+
+    <h1 style="margin-bottom: 0; padding-left: 30px;">Tehlon.com</h1>
+    <p style="font-size: 15px; margin-top: 0; padding-left: 30px;">
+        <em>This is a foolish website just for fun</em>
+    </p>
+
+    <!-- Dumb Projects Box -->
+    <div class="link-box">
+        <div id="title-bar">DumbProjects.txt</div>
+        <p style="font-size: 14px; padding-left: 10px;"></p>
+        <p><a href="https://tehlon-online.github.io/Home/" target="_blank">Home</a></p>
+        <p><a href="https://tehlon-online.github.io/OGguess/" target="_blank">OG GuessThePhrase</a></p> <!-- New OG GuessThePhrase link -->
+        <p><a href="https://tehlon-online.github.io/David/" target="_blank">David GuessThePhrase</a></p>
+        <p><a href="https://tehlon-online.github.io/Davidsprunki/" target="_blank">David Sprunki</a></p>
+    </div>
+
+    <div id="game-container">
+        <div id="title-bar">GuessThePhrase.txt</div>
+        <div class="game-content">
+            <label for="letter">Guess the phrase:</label>
+            <p id="word"></p>
+            <label>Wrong guesses: <span id="wrong-guesses" class="wrong-guesses"></span></label>
+            <label for="letter">Enter a letter:</label>
+            <input type="text" id="letter" maxlength="1" onkeypress="handleKeyPress(event)">
+            <button onclick="guessLetter()">Guess</button>
+            <p id="message"></p>
+        </div>
+        <div id="footer-text">Added 2.6.25</div>
+        <!-- Winning GIF Container -->
+        <div id="celebration-gif-container">
+            <img id="celebration-gif" src="FWUuy7.gif" alt="John Cena Dancing">
+        </div>
+        <!-- Losing GIF Container -->
+        <div id="losing-gif-container">
+            <img id="losing-gif" src="john-cena-sad.gif" alt="John Cena Losing">
+        </div>
+    </div>
+
+    <script>
+        const answer = "U CANT SEE ME";
+        let guessedLetters = [];
+        let wrongLetters = [];
+
+        function displayWord() {
+            document.getElementById("word").textContent = answer.split("")
+                .map(letter => letter === " " ? " " : (guessedLetters.includes(letter) ? letter : "_"))
+                .join("");
+        }
+
+        function guessLetter() {
+            const letterInput = document.getElementById("letter").value.toUpperCase();
+
+            if (!letterInput || guessedLetters.includes(letterInput) || wrongLetters.includes(letterInput)) {
+                document.getElementById("letter").value = "";
+                return;
+            }
+
+            (answer.includes(letterInput) ? guessedLetters : wrongLetters).push(letterInput);
+            document.getElementById("letter").value = "";
+            document.getElementById("wrong-guesses").textContent = wrongLetters.join(", ");
+            displayWord();
+            adjustGameContainerHeight();
+            checkGameStatus();
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === "Enter") {
+                guessLetter();
+            }
+        }
+
+        function adjustGameContainerHeight() {
+            const gameContainer = document.getElementById("game-container");
+            gameContainer.style.height = "auto";
+        }
+
+        function checkGameStatus() {
+            if (!document.getElementById("word").textContent.includes("_")) {
+                document.getElementById("message").textContent = `You win! The word was: ${answer}`;
+                document.getElementById("winningAudio").play();
+                document.getElementById("celebration-gif").style.display = "block";
+            } else if (wrongLetters.length >= 6) {
+                document.getElementById("message").textContent = `You lose! The word was: ${answer}`;
+                document.getElementById("losingAudio").play();
+                document.getElementById("losing-gif").style.display = "block";
+            }
+        }
+
+        window.onload = function() {
+            displayWord();
+            document.getElementById("letter").focus();
+        };
+    </script>
+</body>
+</html>
